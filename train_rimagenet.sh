@@ -4,7 +4,7 @@
 out=./training/standard/
 dataset="restricted_imagenet"
 arch="resnet18"
-transform_type="semantic spatial color blur"
+transform_type="spatial color blur"
 
 for transform in $transform_type
 do
