@@ -33,14 +33,19 @@ TRAINING_DEFAULTS = {
         "epochs": 200,
         "batch_size":256,
         "weight_decay":1e-4,
+        "step_lr": 50,
+        "base_lr": None,
+        "max_lr": None,
         "custom_schedule":[(0, .1), (30, 1e-2), (60, 1e-3), (85, 1e-4), (95, 1e-5), (105, 1e-6)]
     },
     datasets.RestrictedImageNet: {
-        "epochs": 150,
+        "epochs": 110,
         "batch_size": 256,
         "weight_decay": 1e-4,
         "step_lr": 50,
-        "custom_schedule": None
+        "base_lr": None,
+        "max_lr": None,
+        "custom_schedule": [(0, .1), (30, 1e-2), (60, 1e-3), (85, 1e-4), (95, 1e-5), (105, 1e-6)]
     },
     datasets.A2B: {
         "epochs": 150,
@@ -109,6 +114,7 @@ BY_DATASET=looked up in TRAINING_DEFAULTS at runtime)]`
 
 MODEL_LOADER_ARGS = [
     ['dataset', list(datasets.DATASETS.keys()), '', REQ],
+    ['subset', int,'the number of training data points to use', None],
     ['data', str, 'path to the dataset', '/tmp/'],
     ['arch', str, 'architecture (see {cifar,imagenet}_models/', REQ],
     ['batch-size', int, 'batch size for data loading', BY_DATASET],

@@ -63,6 +63,8 @@ def make_loaders(workers, batch_size, transforms, data_path, data_aug=True,
         train_path = os.path.join(data_path, 'train')
         test_path = os.path.join(data_path, 'val')
         if not os.path.exists(test_path):
+            test_path = os.path.join(data_path, 'vaild')
+        if not os.path.exists(test_path):
             test_path = os.path.join(data_path, 'test')
 
         if not os.path.exists(test_path):
