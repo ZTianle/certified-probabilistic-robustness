@@ -105,100 +105,10 @@ def main(args, store=None):
     # evar loss
     def evar_loss(model, x, y, kwargs, beta=0.05, M=10, n_steps=1, step_size=0.1):
 
-        # kwargs = {
-        #     'rot': args.rot,
-        #     'trans': args.trans, 
-        #     'scale': args.scale,
-        #     'hue': args.hue,
-        #     'satu': args.satu,
-        #     'bright': args.bright,
-        #     'cont': args.cont,  
-        #     'gau_size': args.gau_size,
-        #     'gau_sigma': args.gau_sigma,
-        #     'use_best': args.use_best, 
-        #     'transform_type': args.transform_type,
-        #     'attack_type': args.attack_type,
-        #     'do_tqdm': False,
-        #     'tries':args.tries,
-        #     'use_best': args.use_best
-        # }
-
         ts = ch.ones(size=(x.size(0),)).to(x.device)
 
-        # for _ in range(n_steps):
-        #     ts.requires_grad = True
-        #     evar_loss = 0
-
-        #     for _ in range(M):
-        #         _, pert_imgs = model(x, y, make_adv=True, **kwargs)
-        #         output, _ = model(pert_imgs)
-        #         curr_loss = F.cross_entropy(output, y, reduction='none')
-        #         evar_loss += ch.exp(ts * curr_loss)
-
-        #     evar_loss = (ch.div(ch.log(evar_loss / (float(M) * beta)), ts)).mean()
-        #     grad_ts = ch.autograd.grad(evar_loss, ts)[0].detach()
-
-        #         # ts should be kept greater than 0
-        #     ts = F.relu(ts - step_size * grad_ts)
-        #     ts = ts.detach()
-        # # print(grad_ts, ts)
-        # evar_loss = 0
-
-        # for _ in range(M):
-        #     output_ori, pert_imgs = model(x, y, make_adv=True, **kwargs)
-        #     output, _ = model(pert_imgs)
-        #     curr_loss = F.cross_entropy(output, y, reduction='none')
-                
-        #     # curr_loss = ch.nan_to_num(curr_loss)
-        #     # curr_loss = ch.clamp(curr_loss, min=1e-4,  max=1e2)
-        #     evar_loss += ch.exp(ts * curr_loss)
-        #     # evar_loss = ch.clamp(evar_loss.double(), min=1e-5, max=1e4)
-
-        # if evar_loss.isinf().any() or evar_loss.isnan().any():
-        #     evar_loss = F.cross_entropy(output_ori, y)
-        # else:
-        #     # print('evar_loss', evar_loss)
-        #     evar_loss = (ch.div(ch.log(evar_loss / (float(M) * beta) + 1e-8), ts) + 1e-8).mean()
-
-        # if evar_loss.isinf().any() or evar_loss.isnan().any():
-        #     print('ori_loss', F.cross_entropy(output_ori, y))
-        #     print('evar_loss', evar_loss)
-        #     print('ori_output', output_ori)
-        #     print('output', output)
-
-        #     for name, param in model.named_parameters():
-        #         if param.requires_grad:
-        #             if ch.isnan(param).any():
-        #                 print("nan in weight", name)
-        #                 print(name, param)
-        #             elif ch.isnan(param.grad).any():
-        #                 print("nan in grad", name)
-        #                 print(name, param.grad)
-        #             elif ch.isinf(param).any():
-        #                 print("inf in weight", name)
-        #                 print(name, param)
-        #             elif ch.isinf(param.grad).any():
-        #                 print("inf in grad", name)
-        #                 print(name, param.grad)
-        with ch.cuda.amp.autocast(enabled=False):
-            for _ in range(n_steps):
-                ts.requires_grad = True
-                evar_loss = 0
-
-                for _ in range(M):
-                    output_ori, pert_imgs = model(x, y, make_adv=True, **kwargs)
-                    output, _ = model(pert_imgs)
-                    curr_loss = F.cross_entropy(output, y, reduction='none')
-                    evar_loss += ch.exp(ts * curr_loss)
-
-                evar_loss = (ch.div(ch.log(evar_loss / (float(M) * beta)), ts)).mean()
-                grad_ts = ch.autograd.grad(evar_loss, ts)[0].detach()
-
-                # ts should be kept greater than 0
-                ts = F.relu(ts - step_size * grad_ts)
-                ts = ts.detach()
-            # print(grad_ts, ts)
-
+        for _ in range(n_steps):
+            ts.requires_grad = True
             evar_loss = 0
 
             for _ in range(M):
@@ -207,15 +117,31 @@ def main(args, store=None):
                 curr_loss = F.cross_entropy(output, y, reduction='none')
                 evar_loss += ch.exp(ts * curr_loss)
 
-            evar_loss = (ch.div(ch.log(evar_loss / (float(M) * beta) + 1e-8), ts) + 1e-8).mean()
+            evar_loss = (ch.div(ch.log(evar_loss / (float(M) * beta)), ts)).mean()
+            grad_ts = ch.autograd.grad(evar_loss, ts)[0].detach()
 
-            if evar_loss.isinf().any() or evar_loss.isnan().any():
-                print('ori_loss', F.cross_entropy(output_ori, y))
-                print('evar_loss', evar_loss)
-                print('ori_output', output_ori.isinf().any(), output_ori.isnan().any())
-                print('output', output.isinf().any(), output.isnan().any())
-                evar_loss = F.cross_entropy(output_ori, y)
-                print('evar_loss', evar_loss)
+                # ts should be kept greater than 0
+            ts = F.relu(ts - step_size * grad_ts)
+            ts = ts.detach()
+            # print(grad_ts, ts)
+
+        evar_loss = 0
+
+        for _ in range(M):
+            output_ori, pert_imgs = model(x, y, make_adv=True, **kwargs)
+            output, _ = model(pert_imgs)
+            curr_loss = F.cross_entropy(output, y, reduction='none')
+            evar_loss += ch.exp(ts * curr_loss)
+
+        evar_loss = (ch.div(ch.log(evar_loss / (float(M) * beta) + 1e-8), ts) + 1e-8).mean()
+
+        if evar_loss.isinf().any() or evar_loss.isnan().any():
+            print('ori_loss', F.cross_entropy(output_ori, y))
+            print('evar_loss', evar_loss)
+            print('ori_output', output_ori.isinf().any(), output_ori.isnan().any())
+            print('output', output.isinf().any(), output.isnan().any())
+            evar_loss = F.cross_entropy(output_ori, y)
+            print('evar_loss', evar_loss)
                 
         return evar_loss
 

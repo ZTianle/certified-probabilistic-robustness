@@ -428,22 +428,11 @@ def _model_loop(args, loop_type, loader, model, opt, epoch, adv, writer):
 
         # compute gradient and do SGD step
         if is_train:
-            # opt.zero_grad(set_to_none=True)
             opt.zero_grad()
-            if not ch.isnan(loss):
-                loss.backward()
-                opt.step()
+            loss.backward()
+            ch.nn.utils.clip_grad_norm_(model.parameters(), 1e5)
+            opt.step()
 
-                # scaler.scale(loss).backward()
-                # use gradient clipping
-                # ch.nn.utils.clip_grad_norm_(model.parameters(), 1e4)
-                # scaler.step(opt)
-                # scaler.update()
-            else:
-                print("loss is nan")
-            # opt.zero_grad()
-            # loss.backward()
-            # opt.step()
         elif adv and i == 0 and writer:
             # add some examples to the tensorboard
             nat_grid = make_grid(inp[:15, ...])
