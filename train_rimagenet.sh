@@ -1,25 +1,25 @@
 #!/bin/bash
 # training
 
-out=./training/standard/
+out=./training/adv/
 dataset="restricted_imagenet"
 arch="resnet18"
-transform_type="spatial color blur semantic"
+transform_type="color blur"
 
 for transform in $transform_type
 do
 echo $transform
-out_dir=$out$dataset/$arch/$transform/aug
+out_dir=$out$dataset/$arch/$transform/no_aug
 echo $out_dir
 echo $dataset
 echo $arch
 
-CUDA_VISIBLE_DEVICES=0,3 python -m robustness.main \
+cuda_visible_devices=0,3 python -m robustness.main \
        --dataset $dataset \
        --epochs 110\
-       --adv-train 0 \
+       --adv-train 1 \
        --adv-eval 1 \
-       --data-aug 1 \
+       --data-aug 0 \
        --tries 10 \
        --use-best 1 \
        --rot 30\
@@ -35,8 +35,8 @@ CUDA_VISIBLE_DEVICES=0,3 python -m robustness.main \
        --attack-type "random" \
        --out-dir $out_dir \
        --arch $arch \
-       --data "/datasets/ImageNet2012" \
-       --batch-size 128 \
+       --data "/home/tianle/datasets/ImageNet2012" \
+       --batch-size 64 \
        --subset 76800
 done
 # python -m robustness.main \
