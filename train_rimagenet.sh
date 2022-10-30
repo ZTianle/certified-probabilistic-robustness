@@ -35,7 +35,7 @@ cuda_visible_devices=0,3 python -m robustness.main \
        --attack-type "random" \
        --out-dir $out_dir \
        --arch $arch \
-       --data "/home/tianle/datasets/ImageNet2012" \
+       --data "/datasets/ImageNet2012" \
        --batch-size 64 \
        --subset 76800
 done
