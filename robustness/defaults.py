@@ -22,6 +22,15 @@ TRAINING_DEFAULTS = {
         # "max_lr": None,
         "custom_schedule": [(0, 1e-1), (20, 1e-2), (40, 1e-3), (60, 1e-4), (80, 1e-5), (100, 1e-6)]
     },
+        datasets.CIFAR100: {
+        "epochs": 110,
+        "batch_size": 128,
+        "weight_decay":5e-4,
+        "step_lr": 50,
+        "base_lr": None,
+        "max_lr": None,
+        "custom_schedule": [(0, 1e-1), (20, 1e-2), (40, 1e-3), (60, 1e-4), (80, 1e-5), (100, 1e-6)]
+    },
     datasets.CINIC: {
         "epochs": 150,
         "batch_size": 128,
