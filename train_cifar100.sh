@@ -1,7 +1,7 @@
 #!/bin/bash
 # training
 
-out=./training/standard/
+out=./training/adv/
 dataset="cifar100"
 arch="resnet18"
 transform_type="semantic spatial color blur"
@@ -9,17 +9,17 @@ transform_type="semantic spatial color blur"
 for transform in $transform_type
 do
 echo $transform
-out_dir=$out$dataset/$arch/$transform/aug
+out_dir=$out$dataset/$arch/$transform/no_aug
 echo $out_dir
 echo $dataset
 echo $arch
 
-CUDA_VISIBLE_DEVICES=3 python -m robustness.main \
+CUDA_VISIBLE_DEVICES=1,3,0 python -m robustness.main \
        --dataset $dataset \
        --epochs 105\
-       --adv-train 0 \
+       --adv-train 1 \
        --adv-eval 1 \
-       --data-aug 1 \
+       --data-aug 0 \
        --tries 10 \
        --use-best 1 \
        --rot 30\

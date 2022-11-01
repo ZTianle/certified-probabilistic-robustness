@@ -246,6 +246,16 @@ class CustomImageNet(DataSet):
         super(CustomImageNet, self).__init__(ds_name,
                 data_path, **ds_kwargs)
 
+class ImageNet100(CustomImageNet):
+    def __init__(self, data_path, **kwargs):
+        """
+        """
+        ds_name = 'imagenet100'
+        super(ImageNet100, self).__init__(ds_name,
+            data_path=data_path,
+            custom_grouping=[[label] for label in range(0, 1000, 10)],
+            **kwargs,)
+
     def get_model(self, arch, pretrained):
         """
         """
@@ -411,6 +421,7 @@ class MNIST(DataSet):
 DATASETS = {
     'imagenet': ImageNet,
     'imagenet_nocrop': ImageNetNoCrop,
+    'imagenet100': ImageNet100,
     'restricted_imagenet': RestrictedImageNet,
     'cifar': CIFAR,
     'cifar100': CIFAR100,

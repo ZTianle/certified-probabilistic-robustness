@@ -4,7 +4,7 @@
 out=./training/adv/
 dataset="restricted_imagenet"
 arch="resnet18"
-transform_type="color blur"
+transform_type="blur color"
 
 for transform in $transform_type
 do
@@ -14,7 +14,7 @@ echo $out_dir
 echo $dataset
 echo $arch
 
-CUDA_VISIBLE_DEVICES=0,3 python -m robustness.main \
+CUDA_VISIBLE_DEVICES=0,1,3 python -m robustness.main \
        --dataset $dataset \
        --epochs 110\
        --adv-train 1 \
