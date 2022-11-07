@@ -42,10 +42,9 @@ def main(args, store=None):
     '''
     # MAKE DATASET AND LOADERS
     data_path = os.path.expandvars(args.data)
-    dataset = DATASETS[args.dataset](data_path)
+    dataset = DATASETS[args.dataset](data_path, aug_method=args.aug_method)
 
-    train_loader, val_loader = dataset.make_loaders(args.workers,
-                    args.batch_size, data_aug=bool(args.data_aug), subset=args.subset)
+    train_loader, val_loader = dataset.make_loaders(args.workers, args.batch_size, data_aug=bool(args.data_aug), subset=args.subset)
 
     train_loader = helpers.DataPrefetcher(train_loader)
     val_loader = helpers.DataPrefetcher(val_loader)

@@ -36,7 +36,7 @@ def worker_init_fn(worker_id):
     GLOBAL_WORKER_ID = worker_id
     set_seed(GLOBAL_SEED + worker_id)
 
-def make_loaders(workers, batch_size, transforms, data_path, data_aug=True,
+def make_loaders(workers, batch_size, transforms, data_path, data_aug=True, 
                 custom_class=None, dataset="", label_mapping=None, test_subset=None, test_subset_size=1000, subset=None,
                 subset_type='rand', subset_start=0, val_batch_size=None,
                 only_val=False, seed=1):

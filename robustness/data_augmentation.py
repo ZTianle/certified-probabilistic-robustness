@@ -44,6 +44,28 @@ TRAIN_TRANSFORMS_IMAGENET = transforms.Compose([
                       IMAGENET_PCA['eigvec'])
     ])
 
+TRAIN_TRANSFORMS_IMAGENET_RANDAUGMENT = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandAugment(2, 10),
+        transforms.ToTensor()
+    ])
+
+TRAIN_TRANSFORMS_IMAGENET_TRIVIALAUGMENT = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.TrivialAugmentWide(),
+        transforms.ToTensor()
+    ])
+
+TRAIN_TRANSFORMS_IMAGENET_AUGMIX = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.AugMix(),
+        transforms.ToTensor()
+    ])
+
+
 TRAIN_TRANSFORMS_IMAGENET_NOCROP = transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(224),
@@ -72,6 +94,26 @@ TRAIN_TRANSFORMS_DEFAULT = lambda size: transforms.Compose([
             transforms.RandomRotation(2),
             transforms.ToTensor(),
         ])
+TRAIN_TRANSFORMS_DEFAULT_RANDAUGMENT = lambda size: transforms.Compose([
+        transforms.RandomCrop(size, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandAugment(2, 10),
+        transforms.ToTensor()
+    ])
+
+TRAIN_TRANSFORMS_DEFAULT_TRIVIALAUGMENT = lambda size: transforms.Compose([
+        transforms.RandomCrop(size, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.TrivialAugmentWide(),
+        transforms.ToTensor()
+    ])
+
+TRAIN_TRANSFORMS_DEFAULT_AUGMIX = lambda size: transforms.Compose([
+        transforms.RandomCrop(size, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.AugMix(),
+        transforms.ToTensor()
+    ])
 TEST_TRANSFORMS_DEFAULT = lambda size:transforms.Compose([
         transforms.Resize(size),
         transforms.CenterCrop(size),

@@ -143,14 +143,23 @@ class ImageNet(DataSet):
 
     .. [DDS+09] Deng, J., Dong, W., Socher, R., Li, L., Li, K., & Fei-Fei, L. (2009). ImageNet: A large-scale hierarchical image database. 2009 IEEE Conference on Computer Vision and Pattern Recognition, 248-255.
     '''
-    def __init__(self, data_path, **kwargs):
+    def __init__(self, data_path, aug_method=None, **kwargs):
+        if aug_method == "RandAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_RANDAUGMENT
+        elif aug_method == "TrivialAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_TRIVIALAUGMENT
+        elif aug_method == "AugMix":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_AUGMIX
+        else:
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET
+
         ds_kwargs = {
             'num_classes': 1000,
             'mean': ch.tensor([0.485, 0.456, 0.406]),
             'std': ch.tensor([0.229, 0.224, 0.225]),
             'custom_class': None,
             'label_mapping': None,
-            'transform_train': da.TRAIN_TRANSFORMS_IMAGENET,
+            'transform_train': TRAIN_TRANSFORMS,
             'transform_test': da.TEST_TRANSFORMS_IMAGENET
         }
         super(ImageNet, self).__init__('imagenet', data_path, **ds_kwargs)
@@ -162,7 +171,7 @@ class ImageNet(DataSet):
                                         pretrained=pretrained)
 
 class ImageNetNoCrop(ImageNet):
-    def __init__(self, data_path, **kwargs):
+    def __init__(self, data_path, aug_method=None,**kwargs):
         ds_kwargs = {
             'num_classes': 1000,
             'mean': ch.tensor([0.485, 0.456, 0.406]),
@@ -198,8 +207,18 @@ class RestrictedImageNet(DataSet):
         Madry, A. (2019). Robustness May Be at Odds with Accuracy. ICLR
         2019.
     '''
-    def __init__(self, data_path, **kwargs):
+    def __init__(self, data_path, aug_method=None, **kwargs):
         ds_name = 'restricted_imagenet'
+
+        if aug_method == "RandAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_RANDAUGMENT
+        elif aug_method == "TrivialAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_TRIVIALAUGMENT
+        elif aug_method == "AugMix":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_AUGMIX
+        else:
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET
+            
         ds_kwargs = {
             'num_classes': len(constants.RESTRICTED_IMAGNET_RANGES),
             'mean': ch.tensor([0.4717, 0.4499, 0.3837]), 
@@ -207,7 +226,7 @@ class RestrictedImageNet(DataSet):
             'custom_class': None,
             'label_mapping': get_label_mapping(ds_name,
                 constants.RESTRICTED_IMAGNET_RANGES),
-            'transform_train': da.TRAIN_TRANSFORMS_IMAGENET,
+            'transform_train': TRAIN_TRANSFORMS,
             'transform_test': da.TEST_TRANSFORMS_IMAGENET
         }
         super(RestrictedImageNet, self).__init__(ds_name,
@@ -228,10 +247,20 @@ class CustomImageNet(DataSet):
     along with a list of lists of wnids to be grouped together
     (no special formatting required).
     '''
-    def __init__(self, data_path, custom_grouping, **kwargs):
+    def __init__(self, data_path, custom_grouping, aug_method=None,**kwargs):
         """
         """
         ds_name = 'custom_imagenet'
+
+        if aug_method == "RandAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_RANDAUGMENT
+        elif aug_method == "TrivialAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_TRIVIALAUGMENT
+        elif aug_method == "AugMix":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET_AUGMIX
+        else:
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_IMAGENET
+            
         ds_kwargs = {
             'num_classes': len(custom_grouping),
             'mean': ch.tensor([0.4717, 0.4499, 0.3837]), 
@@ -239,7 +268,7 @@ class CustomImageNet(DataSet):
             'custom_class': None,
             'label_mapping': get_label_mapping(ds_name,
                 custom_grouping),
-            'transform_train': da.TRAIN_TRANSFORMS_IMAGENET,
+            'transform_train': TRAIN_TRANSFORMS,
             'transform_test': da.TEST_TRANSFORMS_IMAGENET
         }
         ds_kwargs = self.override_args(ds_kwargs, kwargs)
@@ -284,14 +313,23 @@ class CIFAR(DataSet):
     .. [Kri09] Krizhevsky, A (2009). Learning Multiple Layers of Features
         from Tiny Images. Technical Report.
     """
-    def __init__(self, data_path='/tmp/', **kwargs):
+    def __init__(self, data_path='/tmp/', aug_method=None, **kwargs):
+        if aug_method == "RandAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_DEFAULT_RANDAUGMENT(32)
+        elif aug_method == "TrivialAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_DEFAULT_TRIVIALAUGMENT(32)
+        elif aug_method == "AugMix":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_DEFAULT_AUGMIX(32)
+        else:
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_DEFAULT(32)
+
         ds_kwargs = {
             'num_classes': 10,
             'mean': ch.tensor([0.4914, 0.4822, 0.4465]),
             'std': ch.tensor([0.2023, 0.1994, 0.2010]),
             'custom_class': datasets.CIFAR10,
             'label_mapping': None, 
-            'transform_train': da.TRAIN_TRANSFORMS_DEFAULT(32),
+            'transform_train': TRAIN_TRANSFORMS,
             'transform_test': da.TEST_TRANSFORMS_DEFAULT(32)
         }
         super(CIFAR, self).__init__('cifar', data_path, **ds_kwargs)
@@ -312,14 +350,24 @@ class CIFAR100(DataSet):
     .. [Kri09] Krizhevsky, A (2009). Learning Multiple Layers of Features
         from Tiny Images. Technical Report.
     """
-    def __init__(self, data_path='/tmp/', **kwargs):
+    def __init__(self, data_path='/tmp/', aug_method=None, **kwargs):
+
+        if aug_method == "RandAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_DEFAULT_RANDAUGMENT(32)
+        elif aug_method == "TrivialAugment":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_DEFAULT_TRIVIALAUGMENT(32)
+        elif aug_method == "AugMix":
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_DEFAULT_AUGMIX(32)
+        else:
+            TRAIN_TRANSFORMS = da.TRAIN_TRANSFORMS_DEFAULT(32)
+
         ds_kwargs = {
             'num_classes': 100,
             'mean': ch.tensor([0.5071, 0.4867, 0.4408]),
             'std': ch.tensor([0.2675, 0.2565, 0.2761]),
             'custom_class': datasets.CIFAR100,
             'label_mapping': None, 
-            'transform_train': da.TRAIN_TRANSFORMS_DEFAULT(32),
+            'transform_train': TRAIN_TRANSFORMS,
             'transform_test': da.TEST_TRANSFORMS_DEFAULT(32)
         }
         super(CIFAR100, self).__init__('cifar100', data_path, **ds_kwargs)

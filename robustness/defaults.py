@@ -130,6 +130,8 @@ MODEL_LOADER_ARGS = [
     ['workers', str, '# data loading workers', 16],
     ['resume', str, 'path to checkpoint to resume from', None],
     ['data-aug', [0, 1], 'whether to use data augmentation', 1],
+    ['aug-method', ["RandAugment", "TrivialAugment", "AugMix"], 
+                    'determine data augmentation approach, otherwise default', None],
 ]
 """
 Arguments essential for constructing the model and dataloaders that will be fed
